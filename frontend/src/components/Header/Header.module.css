@@ -1,0 +1,88 @@
+.header {
+  background: #fff;
+  color: #222;
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid #e5e5e5;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+@media (min-width: 480px) {
+  .header { padding: 0 24px; height: 60px; }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #1a1a2e;
+  font-weight: 700;
+  font-size: 1rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+@media (min-width: 480px) {
+  .logo { font-size: 1.15rem; }
+}
+
+.logoSquare {
+  width: 28px;
+  height: 28px;
+  background: #f59e0b;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 480px) {
+  .nav { gap: 24px; }
+}
+
+.navLink {
+  color: #444;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.navLink:hover { color: #f59e0b; }
+
+.cartLink {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #444;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.cartLink:hover { color: #f59e0b; }
+
+.badge {
+  background: #f59e0b;
+  color: #fff;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0 4px;
+}

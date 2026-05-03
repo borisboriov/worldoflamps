@@ -1,0 +1,92 @@
+.page {
+  max-width: 560px;
+  margin: 60px auto;
+  padding: 0 16px;
+  text-align: center;
+}
+
+.circle {
+  width: 80px;
+  height: 80px;
+  background: #d1fae5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 1.8rem;
+  color: #10b981;
+  font-weight: 700;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px;
+}
+
+.orderNum {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f59e0b;
+  margin: 0 0 24px;
+  display: block;
+}
+
+.orderNumLabel {
+  font-size: 0.9rem;
+  color: #888;
+  margin: 0 0 4px;
+  display: block;
+}
+
+/* Order composition */
+.composition {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.compTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.compRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #333;
+  padding: 3px 0;
+}
+
+.compTotal {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  color: #f59e0b;
+  font-size: 1rem;
+  border-top: 1px solid #eee;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 32px;
+  background: #f59e0b;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.btn:hover { background: #d97706; }

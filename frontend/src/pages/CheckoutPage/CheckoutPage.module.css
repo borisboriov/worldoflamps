@@ -1,0 +1,116 @@
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+.title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 24px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.group { display: flex; flex-direction: column; gap: 5px; }
+
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.required { color: #e74c3c; margin-left: 2px; }
+
+.input, .textarea {
+  padding: 10px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #fff;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus, .textarea:focus { border-color: #f59e0b; }
+.inputError { border-color: #e74c3c !important; }
+.textarea { resize: vertical; min-height: 80px; }
+
+.error { color: #e74c3c; font-size: 0.82rem; }
+
+/* Payment method */
+.payment {
+  background: #fff;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.paymentTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.radioOption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.radioOption input { cursor: pointer; accent-color: #f59e0b; }
+
+/* Summary */
+.summary {
+  background: #fff8e1;
+  border: 1.5px solid #f59e0b;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summaryTotal { font-size: 1rem; color: #555; }
+.summaryVal { font-weight: 800; color: #f59e0b; font-size: 1.1rem; }
+.summaryCount { font-size: 0.85rem; color: #888; }
+
+.submitBtn {
+  padding: 14px;
+  background: #f59e0b;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+}
+
+.submitBtn:hover:not(:disabled) { background: #d97706; }
+.submitBtn:disabled { background: #ccc; cursor: not-allowed; }
+
+.apiError {
+  padding: 12px 14px;
+  background: #fef0f0;
+  border: 1px solid #e74c3c;
+  border-radius: 8px;
+  color: #c0392b;
+  font-size: 0.9rem;
+}
