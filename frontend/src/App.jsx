@@ -6,6 +6,7 @@ import ProductPage from './pages/ProductPage/ProductPage';
 import CartPage from './pages/CartPage/CartPage';
 import CheckoutPage from './pages/CheckoutPage/CheckoutPage';
 import ConfirmationPage from './pages/ConfirmationPage/ConfirmationPage';
+import OrdersPage from './pages/OrdersPage/OrdersPage';
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/confirmation" element={<ConfirmationPage />} />
+        <Route path="/orders" element={<OrdersPage />} />
       </Routes>
     </>
   );

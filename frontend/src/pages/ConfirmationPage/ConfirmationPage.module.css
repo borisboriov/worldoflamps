@@ -77,6 +77,13 @@
   padding-top: 8px;
 }
 
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .btn {
   display: inline-block;
   padding: 12px 32px;
@@ -90,3 +97,18 @@
 }
 
 .btn:hover { background: #d97706; }
+
+.btnSecondary {
+  display: inline-block;
+  padding: 12px 32px;
+  background: #fff;
+  color: #1a1a2e;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.btnSecondary:hover { background: #f3f4f6; }

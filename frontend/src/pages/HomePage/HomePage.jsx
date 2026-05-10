@@ -1,17 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getCategories, getProducts } from '../../api/products';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCategories, fetchProducts } from '../../store/slices/productsSlice';
 import ProductCard from '../../components/ProductCard/ProductCard';
 import s from './HomePage.module.css';
 
 export default function HomePage() {
-  const [categories, setCategories] = useState([]);
-  const [popular, setPopular] = useState([]);
+  const dispatch = useDispatch();
+  const categories = useSelector((state) => state.products.categories);
+  const popular = useSelector((state) => state.products.list.items);
 
   useEffect(() => {
-    getCategories().then(setCategories);
-    getProducts({ per_page: 6, sort: 'name' }).then((d) => setPopular(d.items));
-  }, []);
+    dispatch(fetchCategories());
+    dispatch(fetchProducts({ per_page: 6, sort: 'name' }));
+  }, [dispatch]);
 
   return (
     <div>
@@ -35,7 +37,7 @@ export default function HomePage() {
         <section className={s.section}>
           <h2 className={s.sectionTitle}>Популярные товары</h2>
           <div className={s.grid}>
-            {popular.map((p) => (
+            {popular.slice(0, 6).map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

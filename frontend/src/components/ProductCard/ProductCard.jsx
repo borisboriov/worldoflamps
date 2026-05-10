@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
+import { useDispatch } from 'react-redux';
+import { addItem } from '../../store/slices/cartSlice';
 import s from './ProductCard.module.css';
 
 export default function ProductCard({ product }) {
-  const { addItem } = useCart();
+  const dispatch = useDispatch();
   const inStock = product.stock > 0;
 
   return (
@@ -22,7 +23,7 @@ export default function ProductCard({ product }) {
       <div className={s.footer}>
         <span className={s.price}>{parseFloat(product.price).toLocaleString('ru-RU')} ₽</span>
         {inStock ? (
-          <button className={s.btn} onClick={() => addItem(product)}>В корзину</button>
+          <button className={s.btn} onClick={() => dispatch(addItem(product))}>В корзину</button>
         ) : (
           <span className={s.outOfStock}>Нет в наличии</span>
         )}

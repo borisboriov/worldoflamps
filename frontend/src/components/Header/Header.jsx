@@ -1,9 +1,10 @@
 import { Link, NavLink } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
+import { useSelector } from 'react-redux';
+import { selectCartTotals } from '../../store/slices/cartSlice';
 import s from './Header.module.css';
 
 export default function Header() {
-  const { totalItems } = useCart();
+  const { totalItems } = useSelector(selectCartTotals);
 
   return (
     <header className={s.header}>
@@ -13,6 +14,7 @@ export default function Header() {
       </Link>
       <nav className={s.nav}>
         <NavLink to="/catalog" className={s.navLink}>Каталог</NavLink>
+        <NavLink to="/orders" className={s.navLink}>Заказы</NavLink>
         <Link to="/cart" className={s.cartLink}>
           Корзина{totalItems > 0 && <span className={s.badge}>{totalItems}</span>}
         </Link>

@@ -99,12 +99,15 @@ async def search_products(
     return {"items": items, "total": len(items)}
 
 
-@router.get("/{product_id}", response_model=ProductResponse)
-async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
-    """Получить товар по ID."""
-    result = await db.execute(
-        select(Product).where(Product.id == product_id).options(selectinload(Product.category))
-    )
+@router.get("/{key}", response_model=ProductResponse)
+async def get_product(key: str, db: AsyncSession = Depends(get_db)):
+    """Получить товар по ID или slug."""
+    query = select(Product).options(selectinload(Product.category))
+    if key.isdigit():
+        query = query.where(Product.id == int(key))
+    else:
+        query = query.where(Product.slug == key)
+    result = await db.execute(query)
     product = result.scalar_one_or_none()
     if not product:
         raise HTTPException(status_code=404, detail="Товар не найден")

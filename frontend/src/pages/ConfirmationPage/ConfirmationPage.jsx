@@ -1,13 +1,20 @@
-import { Link, useSearchParams, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearLast } from '../../store/slices/ordersSlice';
 import s from './ConfirmationPage.module.css';
 
 export default function ConfirmationPage() {
-  const [params] = useSearchParams();
-  const { state } = useLocation();
+  const last = useSelector((state) => state.orders.last);
+  const dispatch = useDispatch();
 
-  const orderNum = state?.order?.order_number || params.get('order');
-  const orderItems = state?.orderItems || [];
-  const total = state?.total;
+  useEffect(() => {
+    return () => { dispatch(clearLast()); };
+  }, [dispatch]);
+
+  const orderNum = last?.order?.order_number;
+  const orderItems = last?.snapshot?.orderItems || [];
+  const total = last?.snapshot?.total;
 
   return (
     <div className={s.page}>
@@ -38,7 +45,10 @@ export default function ConfirmationPage() {
         </div>
       )}
 
-      <Link to="/" className={s.btn}>На главную</Link>
+      <div className={s.actions}>
+        <Link to="/" className={s.btn}>На главную</Link>
+        <Link to="/orders" className={s.btnSecondary}>Мои заказы</Link>
+      </div>
     </div>
   );
 }

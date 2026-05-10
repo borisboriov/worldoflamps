@@ -1,0 +1,340 @@
+{
+  "info": {
+    "name": "WorldOfLamps API",
+    "description": "Коллекция для микросервисов products (8001) и orders (8002).\n\n## Переменные коллекции\n- `products_url` — http://localhost:8001\n- `orders_url` — http://localhost:8002\n- `product_id` — id товара для тестов (по умолчанию 1)\n- `order_id` — заполняется автоматически после создания заказа\n- `order_number` — заполняется автоматически после создания заказа\n\n## Порядок для видеодемонстрации\n1. Health-checks (Products / Orders)\n2. Categories → List\n3. Products → List (по очереди примеры с фильтрами)\n4. Products → Get by ID\n5. Orders → Create (это пишет order_id и order_number в переменные)\n6. Orders → Get by Number\n7. Orders → Update Status (processing → shipped → delivered)\n8. Orders → Get by Number (показать новый статус)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "b2f4a8c0-1111-2222-3333-worldoflamps"
+  },
+  "variable": [
+    { "key": "products_url", "value": "http://localhost:8001", "type": "string" },
+    { "key": "orders_url", "value": "http://localhost:8002", "type": "string" },
+    { "key": "product_id", "value": "1", "type": "string" },
+    { "key": "order_id", "value": "", "type": "string" },
+    { "key": "order_number", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Products — health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{products_url}}/health", "host": ["{{products_url}}"], "path": ["health"] },
+            "description": "Проверка, что сервис товаров живой."
+          }
+        },
+        {
+          "name": "Orders — health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{orders_url}}/health", "host": ["{{orders_url}}"], "path": ["health"] },
+            "description": "Проверка, что сервис заказов живой."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products — Categories",
+      "item": [
+        {
+          "name": "List categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/categories",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "categories"]
+            },
+            "description": "Получить все категории. Используется фронтом на главной и в каталоге."
+          }
+        },
+        {
+          "name": "Get category by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/categories/led",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "categories", "led"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products — Catalog",
+      "item": [
+        {
+          "name": "List products (default page)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/products?page=1&per_page=12",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "products"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "12" }
+              ]
+            },
+            "description": "Список товаров с пагинацией. Возвращает items / total / page / per_page / pages."
+          }
+        },
+        {
+          "name": "Filter by category (LED)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/products?category=led",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "products"],
+              "query": [{ "key": "category", "value": "led" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by price range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/products?min_price=100&max_price=500",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "products"],
+              "query": [
+                { "key": "min_price", "value": "100" },
+                { "key": "max_price", "value": "500" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Sort by price (desc)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/products?sort=-price",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "products"],
+              "query": [{ "key": "sort", "value": "-price" }]
+            }
+          }
+        },
+        {
+          "name": "Search by text",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/products?search=лампа",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "products"],
+              "query": [{ "key": "search", "value": "лампа" }]
+            }
+          }
+        },
+        {
+          "name": "Combined filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/products?category=led&min_price=100&max_price=1000&sort=price&page=1&per_page=12",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "products"],
+              "query": [
+                { "key": "category", "value": "led" },
+                { "key": "min_price", "value": "100" },
+                { "key": "max_price", "value": "1000" },
+                { "key": "sort", "value": "price" },
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "12" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{products_url}}/api/products/products/{{product_id}}",
+              "host": ["{{products_url}}"],
+              "path": ["api", "products", "products", "{{product_id}}"]
+            },
+            "description": "Открытие карточки товара во фронте."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create order",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Сохраняем order_id и order_number в переменные коллекции,",
+                  "// чтобы следующие запросы использовали их автоматически.",
+                  "if (pm.response.code === 201) {",
+                  "  const data = pm.response.json();",
+                  "  pm.collectionVariables.set('order_id', String(data.id));",
+                  "  pm.collectionVariables.set('order_number', data.order_number);",
+                  "  console.log('Saved:', data.order_number, '(id =', data.id + ')');",
+                  "}",
+                  "pm.test('Status is 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Has order_number', () => pm.expect(pm.response.json().order_number).to.match(/^LMP-\\d{4}$/));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer_name\": \"Иван Петров\",\n  \"customer_phone\": \"+7 900 123-45-67\",\n  \"customer_address\": \"г. Москва, ул. Ленина, д. 1\",\n  \"comment\": \"Доставка после 18:00\",\n  \"items\": [\n    { \"product_id\": 1, \"quantity\": 2 },\n    { \"product_id\": 2, \"quantity\": 1 }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{orders_url}}/api/orders",
+              "host": ["{{orders_url}}"],
+              "path": ["api", "orders"]
+            },
+            "description": "Создать заказ. После 201 ответа скрипт автоматически сохраняет `order_id` и `order_number` в переменные коллекции."
+          }
+        },
+        {
+          "name": "List orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orders_url}}/api/orders?page=1&per_page=20",
+              "host": ["{{orders_url}}"],
+              "path": ["api", "orders"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "per_page", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List orders — filter by status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orders_url}}/api/orders?status=new",
+              "host": ["{{orders_url}}"],
+              "path": ["api", "orders"],
+              "query": [{ "key": "status", "value": "new" }]
+            }
+          }
+        },
+        {
+          "name": "Get order by number",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{orders_url}}/api/orders/{{order_number}}",
+              "host": ["{{orders_url}}"],
+              "path": ["api", "orders", "{{order_number}}"]
+            },
+            "description": "Получить заказ по LMP-XXXX. Этот же запрос делает фронт на странице /orders."
+          }
+        },
+        {
+          "name": "Update status → processing",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\"\n}"
+            },
+            "url": {
+              "raw": "{{orders_url}}/api/orders/{{order_id}}/status",
+              "host": ["{{orders_url}}"],
+              "path": ["api", "orders", "{{order_id}}", "status"]
+            },
+            "description": "Перевести заказ из 'new' в 'processing'."
+          }
+        },
+        {
+          "name": "Update status → shipped",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"shipped\"\n}"
+            },
+            "url": {
+              "raw": "{{orders_url}}/api/orders/{{order_id}}/status",
+              "host": ["{{orders_url}}"],
+              "path": ["api", "orders", "{{order_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Update status → delivered",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\"\n}"
+            },
+            "url": {
+              "raw": "{{orders_url}}/api/orders/{{order_id}}/status",
+              "host": ["{{orders_url}}"],
+              "path": ["api", "orders", "{{order_id}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Update status → cancelled",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"cancelled\"\n}"
+            },
+            "url": {
+              "raw": "{{orders_url}}/api/orders/{{order_id}}/status",
+              "host": ["{{orders_url}}"],
+              "path": ["api", "orders", "{{order_id}}", "status"]
+            },
+            "description": "Допустим только из 'new' или 'processing'. Если уже shipped/delivered — вернёт 400."
+          }
+        }
+      ]
+    }
+  ]
+}

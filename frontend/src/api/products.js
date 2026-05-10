@@ -22,9 +22,11 @@ export function getProducts(params = {}) {
 }
 
 export function getProduct(slug) {
-  const product = mockProducts.find((p) => p.slug === slug);
-  if (!product) return Promise.reject(new Error('Not found'));
-  return fetchWithFallback(`/api/products/products/${product.id}`, () => product);
+  return fetchWithFallback(`/api/products/products/${slug}`, () => {
+    const product = mockProducts.find((p) => p.slug === slug);
+    if (!product) throw new Error('Not found');
+    return product;
+  });
 }
 
 function mockGetProducts(params) {

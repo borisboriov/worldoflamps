@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
-import { createOrder } from '../../api/orders';
+import { useDispatch, useSelector } from 'react-redux';
+import { clearCart, selectCartItems, selectCartTotals } from '../../store/slices/cartSlice';
+import { placeOrder } from '../../store/slices/ordersSlice';
 import s from './CheckoutPage.module.css';
 
 export default function CheckoutPage() {
-  const { items, totalItems, totalPrice, clearCart } = useCart();
+  const items = useSelector(selectCartItems);
+  const { totalItems, totalPrice } = useSelector(selectCartTotals);
+  const status = useSelector((state) => state.orders.status);
+  const apiError = useSelector((state) => state.orders.error);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -16,8 +21,6 @@ export default function CheckoutPage() {
     payment: 'cash',
   });
   const [errors, setErrors] = useState({});
-  const [apiError, setApiError] = useState('');
-  const [loading, setLoading] = useState(false);
 
   if (items.length === 0) {
     return (
@@ -45,27 +48,23 @@ export default function CheckoutPage() {
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
-    setApiError('');
-    setLoading(true);
-    try {
-      const order = await createOrder({
-        customer_name: form.customer_name.trim(),
-        customer_phone: form.customer_phone.trim(),
-        customer_address: form.customer_address.trim(),
-        comment: form.comment.trim() || undefined,
-        items: items.map((i) => ({ product_id: i.id, quantity: i.quantity })),
-      });
-      const orderItems = items.map((i) => ({
-        name: i.name,
-        price: i.price,
-        quantity: i.quantity,
-      }));
-      clearCart();
-      navigate('/confirmation', { state: { order, orderItems, total: totalPrice } });
-    } catch (err) {
-      setApiError(err.message || 'Ошибка при оформлении заказа. Попробуйте ещё раз.');
-    } finally {
-      setLoading(false);
+
+    const payload = {
+      customer_name: form.customer_name.trim(),
+      customer_phone: form.customer_phone.trim(),
+      customer_address: form.customer_address.trim(),
+      comment: form.comment.trim() || undefined,
+      items: items.map((i) => ({ product_id: i.id, quantity: i.quantity })),
+    };
+    const snapshot = {
+      orderItems: items.map((i) => ({ name: i.name, price: i.price, quantity: i.quantity })),
+      total: totalPrice,
+    };
+
+    const result = await dispatch(placeOrder({ payload, snapshot }));
+    if (placeOrder.fulfilled.match(result)) {
+      dispatch(clearCart());
+      navigate('/confirmation');
     }
   }
 
@@ -89,6 +88,8 @@ export default function CheckoutPage() {
       </div>
     );
   }
+
+  const loading = status === 'loading';
 
   return (
     <div className={s.page}>

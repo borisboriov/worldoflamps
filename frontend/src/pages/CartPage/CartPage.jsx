@@ -1,9 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeItem, selectCartItems, selectCartTotals } from '../../store/slices/cartSlice';
 import s from './CartPage.module.css';
 
 export default function CartPage() {
-  const { items, totalPrice, removeItem } = useCart();
+  const items = useSelector(selectCartItems);
+  const { totalPrice } = useSelector(selectCartTotals);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   if (items.length === 0) {
@@ -35,7 +38,7 @@ export default function CartPage() {
             <span className={s.lineTotal}>
               {(parseFloat(item.price) * item.quantity).toLocaleString('ru-RU')} ₽
             </span>
-            <button className={s.removeBtn} title="Удалить" onClick={() => removeItem(item.id)}>×</button>
+            <button className={s.removeBtn} title="Удалить" onClick={() => dispatch(removeItem(item.id))}>×</button>
           </div>
         ))}
       </div>

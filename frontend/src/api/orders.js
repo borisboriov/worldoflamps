@@ -29,3 +29,14 @@ export async function createOrder(payload) {
     };
   }
 }
+
+export async function getOrder(orderNumber) {
+  const res = await fetch(`/api/orders/${orderNumber}`, {
+    signal: AbortSignal.timeout(3000),
+  });
+  if (!res.ok) {
+    if (res.status === 404) throw new Error('NOT_FOUND');
+    throw new Error(`HTTP ${res.status}`);
+  }
+  return res.json();
+}

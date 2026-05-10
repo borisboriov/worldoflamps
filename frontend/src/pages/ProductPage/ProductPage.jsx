@@ -1,32 +1,30 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getProduct } from '../../api/products';
-import { useCart } from '../../context/CartContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductBySlug, clearCurrent } from '../../store/slices/productsSlice';
+import { addItems } from '../../store/slices/cartSlice';
 import s from './ProductPage.module.css';
 
 export default function ProductPage() {
   const { slug } = useParams();
-  const [product, setProduct] = useState(null);
-  const [notFound, setNotFound] = useState(false);
+  const dispatch = useDispatch();
+  const product = useSelector((state) => state.products.current);
+  const status = useSelector((state) => state.products.currentStatus);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
-  const { addItem } = useCart();
 
   useEffect(() => {
-    setNotFound(false);
-    setProduct(null);
-    getProduct(slug)
-      .then(setProduct)
-      .catch(() => setNotFound(true));
-  }, [slug]);
+    dispatch(fetchProductBySlug(slug));
+    return () => { dispatch(clearCurrent()); };
+  }, [dispatch, slug]);
 
   function handleAdd() {
-    for (let i = 0; i < qty; i++) addItem(product);
+    dispatch(addItems({ product, quantity: qty }));
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   }
 
-  if (notFound) return <div className={s.notFound}>Товар не найден.</div>;
+  if (status === 'failed') return <div className={s.notFound}>Товар не найден.</div>;
   if (!product) return <div className={s.notFound}>Загрузка…</div>;
 
   const inStock = product.stock > 0;
