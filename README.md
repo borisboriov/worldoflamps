@@ -4,7 +4,7 @@
 
 ## Стек
 
-- **Frontend:** React 18, React Router DOM v6, Vite, CSS Modules
+- **Frontend:** React 19, Redux Toolkit, React Router DOM v6, Vite, CSS Modules
 - **Backend:** Python 3.12, FastAPI, SQLAlchemy (async)
 - **Database:** PostgreSQL 16
 - **Containerization:** Docker, Docker Compose
@@ -42,6 +42,7 @@ cd frontend && npm run dev
 | `/cart` | Корзина |
 | `/checkout` | Оформление заказа |
 | `/confirmation` | Подтверждение заказа |
+| `/orders` | Мои заказы (с актуальным статусом) |
 
 ## Микросервисы
 
@@ -52,6 +53,14 @@ cd frontend && npm run dev
 | PostgreSQL | 5432 | База данных |
 
 API документация (Swagger UI): http://localhost:8001/docs и http://localhost:8002/docs
+
+## Управление состоянием
+
+Глобальное состояние — Redux Toolkit. Стор разделён на три слайса:
+
+- `productsSlice` — каталог, категории, текущий товар; thunks для запросов к products-сервису
+- `cartSlice` — корзина с persist в localStorage
+- `ordersSlice` — текущий и оформленные заказы; thunks для создания и подгрузки заказов
 
 ## Seed-данные
 
