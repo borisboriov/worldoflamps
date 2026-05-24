@@ -4,6 +4,7 @@ from sqlalchemy import select, func
 from database import get_db
 from models import Category, Product
 from schemas import CategoryCreate, CategoryUpdate, CategoryResponse
+from auth_deps import require_admin
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
@@ -26,7 +27,7 @@ async def get_category_by_slug(slug: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("", response_model=CategoryResponse, status_code=201)
-async def create_category(data: CategoryCreate, db: AsyncSession = Depends(get_db)):
+async def create_category(data: CategoryCreate, db: AsyncSession = Depends(get_db), _: dict = Depends(require_admin)):
     """Создать категорию."""
     # Check uniqueness
     existing = await db.execute(
@@ -43,7 +44,7 @@ async def create_category(data: CategoryCreate, db: AsyncSession = Depends(get_d
 
 
 @router.put("/{category_id}", response_model=CategoryResponse)
-async def update_category(category_id: int, data: CategoryUpdate, db: AsyncSession = Depends(get_db)):
+async def update_category(category_id: int, data: CategoryUpdate, db: AsyncSession = Depends(get_db), _: dict = Depends(require_admin)):
     """Обновить категорию."""
     result = await db.execute(select(Category).where(Category.id == category_id))
     category = result.scalar_one_or_none()
@@ -60,7 +61,7 @@ async def update_category(category_id: int, data: CategoryUpdate, db: AsyncSessi
 
 
 @router.delete("/{category_id}")
-async def delete_category(category_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_category(category_id: int, db: AsyncSession = Depends(get_db), _: dict = Depends(require_admin)):
     """Удалить категорию (нельзя, если есть товары)."""
     result = await db.execute(select(Category).where(Category.id == category_id))
     category = result.scalar_one_or_none()

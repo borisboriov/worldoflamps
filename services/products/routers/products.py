@@ -12,6 +12,7 @@ from schemas import (
 )
 from slugify import slugify
 from datetime import datetime
+from auth_deps import require_admin
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -115,7 +116,7 @@ async def get_product(key: str, db: AsyncSession = Depends(get_db)):
 
 
 @router.post("", response_model=ProductResponse, status_code=201)
-async def create_product(data: ProductCreate, db: AsyncSession = Depends(get_db)):
+async def create_product(data: ProductCreate, db: AsyncSession = Depends(get_db), _: dict = Depends(require_admin)):
     """Создать товар."""
     # Check category exists
     cat_result = await db.execute(select(Category).where(Category.id == data.category_id))
@@ -149,7 +150,7 @@ async def create_product(data: ProductCreate, db: AsyncSession = Depends(get_db)
 
 
 @router.put("/{product_id}", response_model=ProductResponse)
-async def update_product(product_id: int, data: ProductUpdate, db: AsyncSession = Depends(get_db)):
+async def update_product(product_id: int, data: ProductUpdate, db: AsyncSession = Depends(get_db), _: dict = Depends(require_admin)):
     """Обновить товар."""
     result = await db.execute(
         select(Product).where(Product.id == product_id).options(selectinload(Product.category))
@@ -192,7 +193,7 @@ async def update_product(product_id: int, data: ProductUpdate, db: AsyncSession 
 
 
 @router.delete("/{product_id}")
-async def delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_product(product_id: int, db: AsyncSession = Depends(get_db), _: dict = Depends(require_admin)):
     """Мягкое удаление товара (is_active = false)."""
     result = await db.execute(select(Product).where(Product.id == product_id))
     product = result.scalar_one_or_none()
@@ -210,6 +211,7 @@ async def upload_product_image(
     product_id: int,
     image: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
+    _: dict = Depends(require_admin),
 ):
     """Загрузить изображение товара."""
     result = await db.execute(select(Product).where(Product.id == product_id))

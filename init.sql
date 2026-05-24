@@ -3,6 +3,17 @@
 -- ============================================
 
 -- ----------------------------
+-- Users (admin accounts)
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(64) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'admin',
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- ----------------------------
 -- Categories
 -- ----------------------------
 CREATE TABLE IF NOT EXISTS categories (
@@ -68,6 +79,11 @@ CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 -- ============================================
 -- Seed Data
 -- ============================================
+
+-- Admin user (login: admin / password: admin123)
+INSERT INTO users (username, password_hash, role) VALUES
+    ('admin', '$2b$12$XlQBv.JanhzieUBc8SyMteXW65yt9Q/EOfimA/ZChca2ozpxrYUfe', 'admin')
+ON CONFLICT (username) DO NOTHING;
 
 -- Categories
 INSERT INTO categories (name, slug) VALUES

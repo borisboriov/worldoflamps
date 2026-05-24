@@ -10,6 +10,7 @@ from schemas import (
 )
 from datetime import datetime
 from decimal import Decimal
+from auth_deps import require_admin
 
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
@@ -135,6 +136,7 @@ async def list_orders(
     page: int = Query(1, ge=1, description="Номер страницы"),
     per_page: int = Query(20, ge=1, le=100, description="Заказов на страницу"),
     db: AsyncSession = Depends(get_db),
+    _: dict = Depends(require_admin),
 ):
     """Список заказов с фильтрацией по статусу и пагинацией."""
     query = select(Order)
@@ -169,7 +171,7 @@ async def list_orders(
 
 
 @router.patch("/{order_id}/status", response_model=OrderResponse)
-async def update_order_status(order_id: int, data: StatusUpdate, db: AsyncSession = Depends(get_db)):
+async def update_order_status(order_id: int, data: StatusUpdate, db: AsyncSession = Depends(get_db), _: dict = Depends(require_admin)):
     """Сменить статус заказа."""
     result = await db.execute(
         select(Order).where(Order.id == order_id).options(selectinload(Order.items))

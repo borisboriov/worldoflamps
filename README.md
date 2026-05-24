@@ -1,38 +1,47 @@
 # WorldOfLamps 💡
 
-Интернет-магазин завода лампочек. Микросервисный бэкенд на FastAPI + React-фронтенд.
+Интернет-магазин завода лампочек. Микросервисный бэкенд на FastAPI + два React-фронтенда (покупательский и админский).
 
 ## Стек
 
-- **Frontend:** React 19, Redux Toolkit, React Router DOM v6, Vite, CSS Modules
+- **Frontend (клиент и админка):** React 19, Redux Toolkit, React Router DOM v6, Vite, CSS Modules
 - **Backend:** Python 3.12, FastAPI, SQLAlchemy (async)
+- **Auth:** JWT (HS256, общий секрет между сервисами), passlib + bcrypt
 - **Database:** PostgreSQL 16
 - **Containerization:** Docker, Docker Compose
 
 ## Быстрый старт
 
-### Фронтенд (без бэкенда, на mock-данных)
-
 ```bash
-cd frontend
-npm install
-npm run dev
+# 1. Запустить бэкенд (auth + products + orders + postgres)
+docker-compose up --build -d
+
+# 2. Покупательский фронт
+cd frontend && npm install && npm run dev
 # → http://localhost:5173
+
+# 3. Админ-панель (в отдельном терминале)
+cd admin && npm install && npm run dev
+# → http://localhost:5174
+# Логин: admin / admin123
 ```
 
-### Полный стек
+Покупательский фронт работает и без бэкенда (на mock-данных). Админка требует живой бэк.
 
-```bash
-# Запустить бэкенд
-docker-compose up --build
+## Микросервисы
 
-# Запустить фронтенд (в отдельном терминале)
-cd frontend && npm run dev
-```
+| Сервис | Порт | Описание |
+|--------|------|----------|
+| auth-service     | 8003 | Логин админов, выдача JWT (`POST /api/auth/login`, `GET /api/auth/me`) |
+| products-service | 8001 | Товары и категории. GET — публично, POST/PUT/DELETE — только с JWT |
+| orders-service   | 8002 | Заказы. POST и GET по номеру — публично, list и PATCH /status — только с JWT |
+| PostgreSQL       | 5432 | Общая база данных |
 
-Фронтенд автоматически подключается к бэкенду. Если бэкенд не запущен — работает на встроенных mock-данных.
+Все три сервиса делят `JWT_SECRET` через переменные окружения и валидируют подпись токена локально (stateless JWT, без походов в auth).
 
-## Страницы фронтенда
+API-документация (Swagger UI): http://localhost:8001/docs · http://localhost:8002/docs · http://localhost:8003/docs
+
+## Страницы покупательского фронта (`frontend/`)
 
 | URL | Страница |
 |-----|----------|
@@ -44,26 +53,31 @@ cd frontend && npm run dev
 | `/confirmation` | Подтверждение заказа |
 | `/orders` | Мои заказы (с актуальным статусом) |
 
-## Микросервисы
+## Страницы админ-панели (`admin/`)
 
-| Сервис | Порт | Описание |
-|--------|------|----------|
-| Products Service | 8001 | Управление товарами и категориями |
-| Orders Service | 8002 | Управление заказами |
-| PostgreSQL | 5432 | База данных |
+| URL | Страница |
+|-----|----------|
+| `/login` | Вход (логин/пароль → JWT) |
+| `/products` | CRUD товаров (создание, редактирование, мягкое удаление) |
+| `/orders` | Просмотр заказов, смена статуса по state-машине |
 
-API документация (Swagger UI): http://localhost:8001/docs и http://localhost:8002/docs
+Все защищённые роуты обёрнуты в `ProtectedRoute` — без валидного токена редирект на `/login`. На 401 от любого API токен сбрасывается и пользователь выкидывается.
 
 ## Управление состоянием
 
-Глобальное состояние — Redux Toolkit. Стор разделён на три слайса:
+**Покупательский фронт** — Redux Toolkit, три слайса: `productsSlice`, `cartSlice` (persist в localStorage), `ordersSlice`.
 
-- `productsSlice` — каталог, категории, текущий товар; thunks для запросов к products-сервису
-- `cartSlice` — корзина с persist в localStorage
-- `ordersSlice` — текущий и оформленные заказы; thunks для создания и подгрузки заказов
+**Админка** — Redux Toolkit, три слайса: `authSlice` (token + user persist в localStorage), `productsSlice`, `ordersSlice`.
+
+## Учётные записи
+
+| Логин | Пароль | Роль | Где |
+|-------|--------|------|-----|
+| `admin` | `admin123` | admin | сидится в `init.sql` |
 
 ## Seed-данные
 
 При первом запуске автоматически создаются:
+- 1 администратор (admin / admin123)
 - 4 категории: LED, Лампы накаливания, Галогенные, Люминесцентные
 - 20 товаров (по 5 в каждой категории)
