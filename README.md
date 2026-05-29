@@ -1,11 +1,32 @@
 # WorldOfLamps 💡
 
-Интернет-магазин завода лампочек. Микросервисный бэкенд на FastAPI + два React-фронтенда (покупательский и админский).
+Интернет-магазин завода лампочек. Микросервисный бэкенд на FastAPI + два React-фронтенда (покупательский SPA и админская SPA).
+
+## Архитектура
+
+**3 микросервиса (бэкенд):**
+
+| Сервис | Порт | Назначение |
+|--------|------|------------|
+| **products-service** | 8001 | Каталог товаров и категорий. GET-эндпоинты публичные; POST/PUT/DELETE требуют JWT администратора. |
+| **orders-service**   | 8002 | Жизненный цикл заказов: создание (публично), просмотр по номеру (публично), список и смена статуса (только админ). |
+| **admin-service**    | 8003 | Авторизация менеджера: `POST /api/auth/login`, `GET /api/auth/me`. Единственный издатель JWT-токенов. |
+
+**2 SPA-клиента (frontend):**
+
+| Клиент | Порт (dev) | Назначение |
+|--------|------------|------------|
+| **frontend/** | 5173 | Покупательский интерфейс: каталог, корзина, оформление заказа, история заказов. |
+| **admin/**    | 5174 | Панель управления менеджера: логин, CRUD товаров, управление статусами заказов. |
+
+**Общая инфраструктура:** PostgreSQL 16 (единая БД, схема и сид-данные через `init.sql`).
+
+Сервисы делят `JWT_SECRET` через переменные окружения и валидируют подпись токена локально (stateless JWT, без сетевых походов в admin-service).
 
 ## Стек
 
-- **Frontend (клиент и админка):** React 19, Redux Toolkit, React Router DOM v6, Vite, CSS Modules
-- **Backend:** Python 3.12, FastAPI, SQLAlchemy (async)
+- **Frontend:** React 19, Redux Toolkit, React Router DOM v6, Vite, CSS Modules
+- **Backend:** Python 3.12, FastAPI, SQLAlchemy 2.0 (async + asyncpg)
 - **Auth:** JWT (HS256, общий секрет между сервисами), passlib + bcrypt
 - **Database:** PostgreSQL 16
 - **Containerization:** Docker, Docker Compose
@@ -13,7 +34,7 @@
 ## Быстрый старт
 
 ```bash
-# 1. Запустить бэкенд (auth + products + orders + postgres)
+# 1. Запустить бэкенд (admin + products + orders + postgres)
 docker-compose up --build -d
 
 # 2. Покупательский фронт
@@ -26,20 +47,12 @@ cd admin && npm install && npm run dev
 # Логин: admin / admin123
 ```
 
-Покупательский фронт работает и без бэкенда (на mock-данных). Админка требует живой бэк.
+Покупательский фронт работает и без бэкенда (на mock-данных, fallback при таймауте). Админка требует живой бэк.
 
-## Микросервисы
-
-| Сервис | Порт | Описание |
-|--------|------|----------|
-| auth-service     | 8003 | Логин админов, выдача JWT (`POST /api/auth/login`, `GET /api/auth/me`) |
-| products-service | 8001 | Товары и категории. GET — публично, POST/PUT/DELETE — только с JWT |
-| orders-service   | 8002 | Заказы. POST и GET по номеру — публично, list и PATCH /status — только с JWT |
-| PostgreSQL       | 5432 | Общая база данных |
-
-Все три сервиса делят `JWT_SECRET` через переменные окружения и валидируют подпись токена локально (stateless JWT, без походов в auth).
-
-API-документация (Swagger UI): http://localhost:8001/docs · http://localhost:8002/docs · http://localhost:8003/docs
+API-документация (Swagger UI):
+- http://localhost:8001/docs (products)
+- http://localhost:8002/docs (orders)
+- http://localhost:8003/docs (admin)
 
 ## Страницы покупательского фронта (`frontend/`)
 

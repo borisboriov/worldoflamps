@@ -16,8 +16,8 @@ services:
       timeout: 5s
       retries: 5
 
-  auth-service:
-    build: ./services/auth
+  admin-service:
+    build: ./services/admin
     environment:
       DATABASE_URL: postgresql+asyncpg://worldoflamps:worldoflamps_secret@postgres:5432/worldoflamps
       JWT_SECRET: worldoflamps_jwt_secret_change_in_prod
